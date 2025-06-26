@@ -16,7 +16,7 @@ export function sql(...args: Parameters<ReturnType<typeof neon>>) {
     }
     _sql = neon(url)
   }
-  // @ts-expect-error – inferred above
+
   return _sql(...args)
 }
 

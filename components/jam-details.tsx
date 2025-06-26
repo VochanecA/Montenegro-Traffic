@@ -1,5 +1,3 @@
-"use client"
-
 import type { TrafficJam } from "@/lib/db"
 import { FiMapPin, FiClock } from "react-icons/fi"
 import { Badge } from "@/components/ui/badge"
@@ -112,7 +110,7 @@ export default function JamDetails({ jam }: JamDetailsProps) {
         )}
 
         <div className="text-xs text-gray-500 dark:text-gray-400">
-          Coordinates: {jam.latitude.toFixed(6)}, {jam.longitude.toFixed(6)}
+          Coordinates: {Number(jam.latitude).toFixed(6)}, {Number(jam.longitude).toFixed(6)}
         </div>
       </CardContent>
     </Card>
