@@ -1,0 +1,164 @@
+import { Suspense } from "react"
+import { sql } from "@/lib/db"
+import type { TrafficJam } from "@/lib/db"
+import JamForm from "@/components/jam-form"
+import StatsCard from "@/components/stats-card"
+import JamDetails from "@/components/jam-details"
+import MapWrapper from "@/components/map-wrapper"
+
+async function getTrafficJams(): Promise<TrafficJam[]> {
+  try {
+    const jams = await sql`
+      SELECT 
+        tj.*,
+        u.full_name,
+        u.avatar_url
+      FROM traffic_jams tj
+      LEFT JOIN users u ON tj.user_id = u.id
+      WHERE tj.status = 'active'
+      ORDER BY tj.created_at DESC
+    `
+
+    return jams.map((jam) => ({
+      ...jam,
+      user: jam.full_name
+        ? {
+            full_name: jam.full_name,
+            avatar_url: jam.avatar_url,
+          }
+        : undefined,
+    }))
+  } catch (error) {
+    console.error("Failed to fetch traffic jams:", error)
+    return []
+  }
+}
+
+export default async function HomePage() {
+  const trafficJams = await getTrafficJams()
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Section */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Traffic Montenegro</h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">
+              Real-time traffic reports and road conditions across Montenegro
+            </p>
+          </div>
+          <JamForm />
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="mb-8">
+        <Suspense fallback={<div className="h-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />}>
+          <StatsCard />
+        </Suspense>
+      </div>
+
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Map Section */}
+        <div className="lg:col-span-3">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Live Traffic Map</h2>
+            <div className="h-[500px]">
+              <MapWrapper trafficJams={trafficJams} />
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Recent Reports</h2>
+            <div className="space-y-4 max-h-[500px] overflow-y-auto">
+              {trafficJams.length > 0 ? (
+                trafficJams.slice(0, 5).map((jam) => (
+                  <div key={jam.id} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0">
+                    <JamDetails jam={jam} />
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                  No active traffic reports at the moment.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="mt-16 border-t border-gray-200 dark:border-gray-700 pt-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">About</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              Traffic Montenegro helps citizens report and stay informed about traffic conditions across the country.
+            </p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+              <li>
+                <a href="/about" className="hover:text-teal-500">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="/contact" className="hover:text-teal-500">
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a href="/terms" className="hover:text-teal-500">
+                  Terms of Use
+                </a>
+              </li>
+              <li>
+                <a href="/privacy" className="hover:text-teal-500">
+                  Privacy Policy
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Support</h3>
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+              <li>
+                <a href="/help" className="hover:text-teal-500">
+                  Help Center
+                </a>
+              </li>
+              <li>
+                <a href="/faq" className="hover:text-teal-500">
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a href="/report-bug" className="hover:text-teal-500">
+                  Report Bug
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Statistics</h3>
+            <div className="text-sm text-gray-600 dark:text-gray-300">
+              <p>Active Reports: {trafficJams.length}</p>
+              <p>Total Users: Loading...</p>
+              <p>Last Updated: {new Date().toLocaleTimeString()}</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-300">
+          <p>&copy; 2024 Traffic Montenegro. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  )
+}
