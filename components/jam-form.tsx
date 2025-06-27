@@ -140,7 +140,8 @@ export default function JamForm({ selectedLocation, onLocationSelect }: JamFormP
       <DialogTrigger asChild>
         <Button className="bg-teal-500 hover:bg-teal-600 text-white">Report Traffic Jam</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+<DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto z-[1000]">
+
         <DialogHeader>
           <DialogTitle>Report Traffic Jam or Blockage</DialogTitle>
         </DialogHeader>

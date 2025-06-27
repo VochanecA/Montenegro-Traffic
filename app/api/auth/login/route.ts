@@ -11,11 +11,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const users = await sql`
+    const result = await sql`
       SELECT id, email, password_hash, full_name, avatar_url
       FROM users 
       WHERE email = ${email}
     `
+    const users: Record<string, any>[] = Array.isArray(result) ? result : (result?.rows ?? [])
 
     if (users.length === 0) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })

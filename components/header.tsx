@@ -1,9 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { FiSun, FiMoon, FiUser, FiLogOut, FiSettings } from "react-icons/fi"
+import {
+  FiSun,
+  FiMoon,
+  FiUser,
+  FiLogOut,
+  FiSettings,
+} from "react-icons/fi"
 import { useTheme } from "./theme-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,42 +19,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-interface User {
-  id: number
-  email: string
-  full_name: string
-  avatar_url?: string
-}
+import { useAuth } from "@/components/auth-provider" // ✅ Use global auth context
 
 export default function Header() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
   const { theme, setTheme } = useTheme()
   const router = useRouter()
-
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch("/api/auth/me")
-      if (response.ok) {
-        const userData = await response.json()
-        setUser(userData)
-      }
-    } catch (error) {
-      console.error("Auth check failed:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { user, logout, loading } = useAuth() // ✅ Get user & auth funcs
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" })
-      setUser(null)
+      await logout()
       router.push("/")
       router.refresh()
     } catch (error) {
@@ -80,6 +59,7 @@ export default function Header() {
               {theme === "light" ? <FiMoon className="h-4 w-4" /> : <FiSun className="h-4 w-4" />}
             </Button>
 
+            {/* User menu or login/register */}
             {!loading && (
               <>
                 {user ? (

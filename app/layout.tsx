@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import Header from "@/components/header"
 import HelpChat from "@/components/help-chat"
+import { AuthProvider } from "@/components/auth-provider" // ⬅️ import it
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
   },
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -45,14 +46,16 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <Header />
-            <main>{children}</main>
-            <HelpChat />
-            <Toaster />
-          </div>
-        </ThemeProvider>
+        <AuthProvider> {/* ✅ Wrap everything inside AuthProvider */}
+          <ThemeProvider defaultTheme="system">
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+              <Header />
+              <main>{children}</main>
+              <HelpChat />
+              <Toaster />
+            </div>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   )

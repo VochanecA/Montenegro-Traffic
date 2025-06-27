@@ -2,18 +2,43 @@ import { type NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import { getUserFromToken } from "@/lib/auth"
 
+// Define the type for your jam with user info
+interface TrafficJamWithUser {
+  id: number
+  user_id: number | null
+  title: string
+  description?: string | null
+  latitude: number
+  longitude: number
+  address?: string | null
+  jam_type: string
+  severity: string
+  status: string
+  photo_urls: string[] | null
+  created_at: string
+  updated_at: string
+  full_name?: string | null
+  avatar_url?: string | null
+}
+
 export async function GET() {
   try {
-    const jams = await sql`
-      SELECT 
-        tj.*,
-        u.full_name,
-        u.avatar_url
-      FROM traffic_jams tj
-      LEFT JOIN users u ON tj.user_id = u.id
-      WHERE tj.status = 'active'
-      ORDER BY tj.created_at DESC
-    `
+    // Raw result from DB
+const rawResult = await sql`
+  SELECT
+    tj.*,
+    u.full_name,
+    u.avatar_url
+  FROM traffic_jams tj
+  LEFT JOIN users u ON tj.user_id = u.id
+  WHERE tj.status = 'active'
+  -- AND tj.created_at > NOW() - INTERVAL '6 hours'
+  ORDER BY tj.created_at DESC
+`;
+
+// console.log("Raw SQL Result:", rawResult)
+    // Cast rawResult to an array of TrafficJamWithUser
+    const jams = rawResult as unknown as TrafficJamWithUser[]
 
     return NextResponse.json(
       jams.map((jam) => ({
@@ -64,7 +89,15 @@ export async function POST(request: NextRequest) {
       RETURNING *
     `
 
-    return NextResponse.json(result[0])
+    // Cast result to an array of jams, then get first element safely
+    const jams = result as unknown as TrafficJamWithUser[]
+    const newJam = jams.at(0)
+
+    if (!newJam) {
+      return NextResponse.json({ error: "Failed to create jam" }, { status: 500 })
+    }
+
+    return NextResponse.json(newJam)
   } catch (error) {
     console.error("Failed to create jam:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

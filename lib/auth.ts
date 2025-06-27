@@ -4,6 +4,15 @@ import { sql } from "./db"
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 
+// Define the User type
+interface User {
+  id: number
+  email: string
+  full_name: string
+  avatar_url?: string
+  created_at?: string
+}
+
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)
 }
@@ -24,15 +33,15 @@ export function verifyToken(token: string): { userId: number } | null {
   }
 }
 
-export async function getUserFromToken(token: string) {
+export async function getUserFromToken(token: string): Promise<User | null> {
   const decoded = verifyToken(token)
   if (!decoded) return null
 
   const users = await sql`
-    SELECT id, email, full_name, avatar_url, created_at 
-    FROM users 
+    SELECT id, email, full_name, avatar_url, created_at
+    FROM users
     WHERE id = ${decoded.userId}
-  `
+  ` as User[]
 
   return users[0] || null
 }

@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -11,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/components/auth-provider" // Add this import
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const { login } = useAuth() // Add this line
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,6 +34,7 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
+        credentials: 'include', // Add this for cookies
       })
 
       const data = await response.json()
@@ -42,6 +44,10 @@ export default function LoginPage() {
           title: "Welcome back!",
           description: "You have been successfully logged in.",
         })
+        
+        // Update the global auth state - this will automatically update the header
+        login(data.user)
+        
         router.push("/")
         router.refresh()
       } else {
