@@ -6,7 +6,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import Header from "@/components/header"
 import HelpChat from "@/components/help-chat"
-import { AuthProvider } from "@/components/auth-provider" // ⬅️ import it
+import { AuthProvider } from "@/components/auth-provider" 
+import { Analytics } from "@vercel/analytics/next"
 
 
 
@@ -35,6 +36,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Analytics/>
       <head>
         <link
           rel="stylesheet"
