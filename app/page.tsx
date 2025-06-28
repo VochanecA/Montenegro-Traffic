@@ -208,7 +208,36 @@ export default async function HomePage({
 
       {/* Footer */}
       <footer className="mt-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-teal-400/30 shadow-inner">
-        {/* Footer content remains the same */}
+
+  <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+    <div className="flex items-center gap-3">
+      {/* Optional: Add your logo here */}
+      <span className="font-bold text-lg text-teal-300">Traffic Montenegro</span>
+      <span className="hidden md:inline text-gray-500">|</span>
+      <span className="text-sm text-gray-400">Real-time traffic updates &amp; community reports</span>
+    </div>
+    <nav>
+      <ul className="flex flex-wrap items-center gap-x-6 text-sm">
+        <li>
+          <a href="/about" className="hover:text-teal-400 transition-colors">About</a>
+        </li>
+        <li>
+          <a href="/privacy" className="hover:text-teal-400 transition-colors">Privacy</a>
+        </li>
+        <li>
+          <a href="/terms" className="hover:text-teal-400 transition-colors">Terms</a>
+        </li>
+        <li>
+          <a href="#" className="hover:text-teal-400 transition-colors">Contact</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div className="text-center py-4 text-xs text-gray-500 border-t border-teal-800/20">
+    © {new Date().getFullYear()} Traffic Montenegro. All rights reserved.
+  </div>
+
+
       </footer>
     </div>
   );
