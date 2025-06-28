@@ -58,7 +58,7 @@ export default function Header() {
               <FaCar className="text-white text-2xl" />
             </span>
             <div>
-              <span className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center">
+              <span className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center">
                 Traffic Montenegro
               </span>
 <span className="text-xs text-orange-600 dark:text-yellow-300 font-medium mt-1 flex items-center gap-1">
