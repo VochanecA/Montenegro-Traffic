@@ -5,6 +5,8 @@ import JamForm from "@/components/jam-form";
 import StatsCard from "@/components/stats-card";
 import JamDetails from "@/components/jam-details";
 import MapWrapper from "@/components/map-wrapper";
+import TopUsersCard from "@/components/top-users-card"
+import JamTypeStatsCard from "@/components/jam-type-stats-card"
 
 interface TrafficJamWithUser extends TrafficJam {
   full_name: string | null;
@@ -81,19 +83,19 @@ export default async function HomePage({
           <label htmlFor="hours" className="text-gray-700 dark:text-gray-300">
             Filter by time range:
           </label>
-<select
-  id="hours"
-  name="hours"
-  defaultValue={hours}
-  className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 text-black"
->
-  <option value="3">Last 3 Hours</option>
-  <option value="6">Last 6 Hours</option>
-  <option value="12">Last 12 Hours</option>
-  <option value="24">Last 24 Hours</option>
-  <option value="36">Last 36 Hours</option>
-  <option value="48">Last 48 Hours</option>
-</select>
+          <select
+            id="hours"
+            name="hours"
+            defaultValue={hours}
+            className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 text-black"
+          >
+            <option value="3">Last 3 Hours</option>
+            <option value="6">Last 6 Hours</option>
+            <option value="12">Last 12 Hours</option>
+            <option value="24">Last 24 Hours</option>
+            <option value="36">Last 36 Hours</option>
+            <option value="48">Last 48 Hours</option>
+          </select>
 
           <button
             type="submit"
@@ -154,6 +156,15 @@ export default async function HomePage({
           </div>
         </div>
       </div>
+
+      {/* Padding between main content and stats cards */}
+      <div className="py-10" />
+
+      {/* Stats Cards Section */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
+        <TopUsersCard />
+        <JamTypeStatsCard />
+      </section>
 
       {/* Footer */}
       <footer className="mt-16 border-t border-gray-200 dark:border-gray-700 pt-8">
@@ -222,7 +233,7 @@ export default async function HomePage({
             </h3>
             <div className="text-sm text-gray-600 dark:text-gray-300">
               <p>Active Reports: {trafficJams.length}</p>
-              <p>Total Users: Loading...</p>
+              {/* <p>Total Users: Loading...</p> */}
               <p>Last Updated: {new Date().toLocaleTimeString()}</p>
             </div>
           </div>
