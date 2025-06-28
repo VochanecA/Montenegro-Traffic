@@ -82,47 +82,54 @@ export default function Map({ trafficJams, onMarkerClick, onMapClick }: MapProps
     cityWeatherLayerRef.current.clearLayers();
 
     // For each city, fetch weather and add marker to the group
-    montenegrinCities.forEach(async (city) => {
-      try {
-        const data = await fetchWeather(city.lat, city.lon);
+    const fetchAndAddMarkers = async () => {
+      const promises = montenegrinCities.map(async (city) => {
+        try {
+          const data = await fetchWeather(city.lat, city.lon);
+          console.log("Weather data for", city.name, data); // Add this line for debugging
 
-        const iconHtml = `
-          <div style="display: flex; flex-direction: column; align-items: center;">
-            <img src="${data.icon.startsWith("http") ? data.icon : `https:${data.icon}`}" 
-                 alt="${data.conditions}" style="width:36px;height:36px;" />
-            <span style="margin-top:2px; font-weight:bold; color:#222; background:rgba(255,255,255,0.85); border-radius:4px; padding:2px 6px; font-size:15px;">
-              ${data.temp}°C
-            </span>
-          </div>
-        `;
-
-        const weatherIcon = L.divIcon({
-          className: "weather-marker",
-          html: iconHtml,
-          iconSize: [44, 56],
-          iconAnchor: [22, 56],
-        });
-
-        const marker = L.marker([city.lat, city.lon], { icon: weatherIcon })
-          .bindPopup(`
-            <div style="text-align:center;">
-              <strong>${city.name}</strong><br/>
-              <img src="${data.icon.startsWith("http") ? data.icon : `https:${data.icon}`}" alt="${data.conditions}" width="48" height="48"/><br/>
-              <span style="font-size:18px;">
+          const iconHtml = `
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img src="${data.icon.startsWith("http") ? data.icon : `https:${data.icon}`}"
+                   alt="${data.conditions}" style="width:36px;height:36px;" />
+              <span style="margin-top:2px; font-weight:bold; color:#222; background:rgba(255,255,255,0.85); border-radius:4px; padding:2px 6px; font-size:15px;">
                 ${data.temp}°C
-                <span style="color:#888;font-size:15px;">(feels like ${data.feelslike}°C)</span>
-              </span><br/>
-              <span>${data.conditions}</span><br/>
-              <span>Wind: ${data.windSpeed} km/h <b>${data.windDir}</b></span><br/>
-              <span style="font-size:12px; color:#888;">Updated: ${data.lastUpdated}</span>
+              </span>
             </div>
-          `);
+          `;
 
-        marker.addTo(cityWeatherLayerRef.current!);
-      } catch (err) {
-        // Optionally handle error
-      }
-    });
+          const weatherIcon = L.divIcon({
+            className: "weather-marker",
+            html: iconHtml,
+            iconSize: [44, 56],
+            iconAnchor: [22, 56],
+          });
+
+          const marker = L.marker([city.lat, city.lon], { icon: weatherIcon })
+            .bindPopup(`
+              <div style="text-align:center;">
+                <strong>${city.name}</strong><br/>
+                <img src="${data.icon.startsWith("http") ? data.icon : `https:${data.icon}`}" alt="${data.conditions}" width="48" height="48"/><br/>
+                <span style="font-size:18px;">
+                  ${data.temp}°C
+                  <span style="color:#888;font-size:15px;">(feels like ${data.feelslike}°C)</span>
+                </span><br/>
+                <span>${data.conditions}</span><br/>
+                <span>Wind: ${data.windSpeed} km/h <b>${data.windDir}</b></span><br/>
+                <span style="font-size:12px; color:#888;">Updated: ${data.lastUpdated}</span>
+              </div>
+            `);
+
+          marker.addTo(cityWeatherLayerRef.current!);
+        } catch (err) {
+          console.error("Error fetching weather data for", city.name, err); // Add this line for debugging
+        }
+      });
+
+      await Promise.all(promises);
+    };
+
+    fetchAndAddMarkers();
 
     // Add the overlay to the map (if not already)
     cityWeatherLayerRef.current.addTo(mapInstanceRef.current);
@@ -222,8 +229,8 @@ export default function Map({ trafficJams, onMarkerClick, onMapClick }: MapProps
   }
 
   function formatTime(timeString: string): string {
-    return new Date(timeString).toLocaleTimeString([], { 
-      hour: '2-digit', 
+    return new Date(timeString).toLocaleTimeString([], {
+      hour: '2-digit',
       minute: '2-digit',
       hour12: false
     });
