@@ -1,3 +1,4 @@
+// app/api/auth/login/route.ts
 import { type NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/db"
 import { verifyPassword, generateToken } from "@/lib/auth"
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Set HTTP-only cookie
-    response.cookies.set("auth-token", token, {
+    response.cookies.set("token", token, { // <--- CHANGE THIS LINE FROM "auth-token" to "token"
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

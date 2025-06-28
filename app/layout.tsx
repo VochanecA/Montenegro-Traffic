@@ -10,6 +10,8 @@ import { AuthProvider } from "@/components/auth-provider" // ⬅️ import it
 import { CookieBanner } from "@/components/CookieBanner";
 
 
+
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
