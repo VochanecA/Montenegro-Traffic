@@ -48,7 +48,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <CookieBanner />
+
         <AuthProvider> {/* ✅ Wrap everything inside AuthProvider */}
           <ThemeProvider defaultTheme="system">
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -59,6 +59,7 @@ export default function RootLayout({
             </div>
           </ThemeProvider>
         </AuthProvider>
+                <CookieBanner />
       </body>
     </html>
   )
