@@ -9,6 +9,8 @@ import TopUsersCard from "@/components/top-users-card";
 import JamTypeStatsCard from "@/components/jam-type-stats-card";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
+import { Facebook, Twitter, Instagram, Linkedin, MapPin } from 'lucide-react';
+
 
 interface User {
   id: number;
@@ -206,38 +208,93 @@ export default async function HomePage({
 
 
 
-      {/* Footer */}
-      <footer className="mt-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-teal-400/30 shadow-inner">
+ {/* Footer */}
+   {/* Footer */}
+      <footer className="mt-16 bg-gradient-to-r from-teal-600/80 to-blue-600/80 dark:from-gray-900/80 dark:to-gray-800/80 backdrop-blur-lg border-t border-grey-400/50 shadow-2xl text-white rounded-t-xl">
+        <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {/* Column 1: Brand and Description */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex items-center gap-3 mb-4">
+              <MapPin className="text-teal-200" size={28} strokeWidth={2.5} /> {/* Reduced size */}
+              <span className="font-bold text-2xl text-teal-100 drop-shadow-lg">Traffic Montenegro</span> {/* Reduced size and boldness */}
+            </div>
+            <p className="text-xs text-teal-50 leading-relaxed max-w-xs"> {/* Reduced text size */}
+              Your go-to source for real-time traffic updates and community-driven reports across Montenegro. Stay informed, stay safe.
+            </p>
+          </div>
 
-  <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
-    <div className="flex items-center gap-3">
-      {/* Optional: Add your logo here */}
-      <span className="font-bold text-lg text-teal-300">Traffic Montenegro</span>
-      <span className="hidden md:inline text-gray-500">|</span>
-      <span className="text-sm text-gray-400">Real-time traffic updates &amp; community reports</span>
-    </div>
-    <nav>
-      <ul className="flex flex-wrap items-center gap-x-6 text-sm">
-        <li>
-          <a href="/about" className="hover:text-teal-400 transition-colors">About</a>
-        </li>
-        <li>
-          <a href="/privacy" className="hover:text-teal-400 transition-colors">Privacy</a>
-        </li>
-        <li>
-          <a href="/terms" className="hover:text-teal-400 transition-colors">Terms</a>
-        </li>
-        <li>
-          <a href="#" className="hover:text-teal-400 transition-colors">Contact</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  <div className="text-center py-4 text-xs text-gray-500 border-t border-teal-800/20">
-    © {new Date().getFullYear()} Traffic Montenegro. All rights reserved.
-  </div>
+          {/* Column 2: Quick Links */}
+          <div className="text-center md:text-left">
+            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Quick Links</h3> {/* Reduced heading size */}
+            <ul className="space-y-3 text-sm"> {/* Reduced list item text size */}
+              <li>
+                <a href="/about" className="text-teal-50 hover:text-teal-200 transition-all duration-300 ease-in-out transform hover:translate-x-1 block">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="/contact" className="text-teal-50 hover:text-teal-200 transition-all duration-300 ease-in-out transform hover:translate-x-1 block">
+                  Contact
+                </a>
+              </li>
+              <li>
+                <a href="/faq" className="text-teal-50 hover:text-teal-200 transition-all duration-300 ease-in-out transform hover:translate-x-1 block">
+                  FAQ
+                </a>
+              </li>
+            </ul>
+          </div>
 
+          {/* Column 3: Legal */}
+          <div className="text-center md:text-left">
+            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Legal</h3> {/* Reduced heading size */}
+            <ul className="space-y-3 text-sm"> {/* Reduced list item text size */}
+              <li>
+                <a href="/privacy" className="text-teal-50 hover:text-teal-200 transition-all duration-300 ease-in-out transform hover:translate-x-1 block">
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="/terms" className="text-teal-50 hover:text-teal-200 transition-all duration-300 ease-in-out transform hover:translate-x-1 block">
+                  Terms of Service
+                </a>
+              </li>
+              <li>
+                <a href="/disclaimer" className="text-teal-50 hover:text-teal-200 transition-all duration-300 ease-in-out transform hover:translate-x-1 block">
+                  Disclaimer
+                </a>
+              </li>
+            </ul>
+          </div>
 
+          {/* Column 4: Connect With Us (Social Media) */}
+          <div className="text-center md:text-left">
+            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Connect With Us</h3> {/* Reduced heading size */}
+            <div className="flex justify-center md:justify-start space-x-5">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+                 className="text-teal-50 hover:text-teal-200 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
+                <Facebook size={24} /> {/* Reduced icon size */}
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+                 className="text-teal-50 hover:text-teal-200 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
+                <Twitter size={24} /> {/* Reduced icon size */}
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+                 className="text-teal-50 hover:text-teal-200 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
+                <Instagram size={24} /> {/* Reduced icon size */}
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                 className="text-teal-50 hover:text-teal-200 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
+                <Linkedin size={24} /> {/* Reduced icon size */}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Copyright Section */}
+        <div className="text-center py-5 text-xs text-teal-200 border-t border-teal-800/30"> {/* Reduced text size */}
+          © {new Date().getFullYear()} Traffic Montenegro. All rights reserved.
+        </div>
       </footer>
     </div>
   );
