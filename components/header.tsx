@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import ReactCountryFlag from "react-country-flag";
 import { useRouter } from "next/navigation"
 import {
   FiSun,
@@ -62,8 +63,10 @@ export default function Header() {
               </span>
 <span className="text-xs text-orange-600 dark:text-yellow-300 font-medium mt-1 flex items-center gap-1">
   <FaCar className="inline-block mr-1" />
-  Traffic jam reporting web app
+  Traffic jam in 
+  <ReactCountryFlag countryCode="ME" svg style={{ width: "1.5em", height: "1.5em", marginLeft: "0.25em" }} />
 </span>
+
 
             </div>
           </Link>
