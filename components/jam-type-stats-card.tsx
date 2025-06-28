@@ -1,3 +1,4 @@
+// components/jam-type-stats-card.tsx
 "use client"
 
 import { useEffect, useState, ReactElement } from "react"
@@ -10,53 +11,49 @@ interface JamTypeStats {
   total: { jam_type: string; count: number }[]
 }
 
-// Color for each jam type pill
+// Modern and distinct colors for each real jam type
 const jamTypeColors: Record<string, string> = {
-  Strawberry: "bg-pink-400/80 text-white",
-  Blueberry: "bg-blue-400/80 text-white",
-  Raspberry: "bg-red-400/80 text-white",
-  Apricot: "bg-orange-400/80 text-white",
-  Default: "bg-gray-200/70 text-gray-800",
+  accident: "bg-red-500/90 text-white", // Red for accidents
+  construction: "bg-yellow-500/90 text-gray-900", // Yellow for construction
+  weather: "bg-blue-500/90 text-white", // Blue for weather-related jams
+  traffic_jam: "bg-orange-500/90 text-white", // Orange for general traffic
+  other: "bg-purple-500/90 text-white", // Purple for miscellaneous
+  Default: "bg-gray-300/90 text-gray-800", // Fallback for unknown types
 }
 
-// Brighter background, text, icon, and label for each period
+// Redesigned period metadata with gradients and refined text colors
 const periodMeta: Record<
   string,
   {
-    bg: string
-    text: string
-    size: string
-    icon: ReactElement
-    label: string
+    bg: string // Background gradient
+    text: string // Text color for heading
+    icon: ReactElement // Icon for the period
+    label: string // Display label for the period
   }
 > = {
   day: {
-    bg: "bg-yellow-300/90",
-    text: "text-yellow-900",
-    size: "text-base",
-    icon: <FiSun className="inline mr-2 text-yellow-600" />,
-    label: "Day",
+    bg: "bg-gradient-to-br from-yellow-100 to-amber-200 dark:from-yellow-700 dark:to-amber-800",
+    text: "text-yellow-800 dark:text-yellow-200",
+    icon: <FiSun className="inline-block mr-2 text-yellow-600 dark:text-yellow-300" />,
+    label: "Today",
   },
   month: {
-    bg: "bg-blue-300/90",
-    text: "text-blue-900",
-    size: "text-lg",
-    icon: <FiCalendar className="inline mr-2 text-blue-600" />,
-    label: "Month",
+    bg: "bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-700 dark:to-indigo-800",
+    text: "text-blue-800 dark:text-blue-200",
+    icon: <FiCalendar className="inline-block mr-2 text-blue-600 dark:text-blue-300" />,
+    label: "This Month",
   },
   year: {
-    bg: "bg-emerald-300/90",
-    text: "text-emerald-900",
-    size: "text-xl",
-    icon: <FiClock className="inline mr-2 text-emerald-600" />,
-    label: "Year",
+    bg: "bg-gradient-to-br from-green-100 to-emerald-200 dark:from-green-700 dark:to-emerald-800",
+    text: "text-green-800 dark:text-green-200",
+    icon: <FiClock className="inline-block mr-2 text-emerald-600 dark:text-emerald-300" />,
+    label: "This Year",
   },
   total: {
-    bg: "bg-pink-400/90",
-    text: "text-pink-50",
-    size: "text-2xl",
-    icon: <FiAward className="inline mr-2 text-pink-100" />,
-    label: "Total",
+    bg: "bg-gradient-to-br from-pink-200 to-rose-300 dark:from-pink-800 dark:to-rose-900",
+    text: "text-pink-900 dark:text-pink-100",
+    icon: <FiAward className="inline-block mr-2 text-pink-600 dark:text-pink-300" />,
+    label: "Overall Total",
   },
 }
 
@@ -89,26 +86,40 @@ export default function JamTypeStatsCard() {
 
   const renderStats = (stats: { jam_type: string; count: number }[]) => {
     const total = stats.reduce((sum, { count }) => sum + count, 0)
+    if (stats.length === 0 || total === 0) { // Added total === 0 check
+      return (
+        <p className="text-sm text-gray-500 dark:text-gray-400 italic">No data available for this period.</p>
+      );
+    }
     return stats.map(({ jam_type, count }) => {
-      const color = jamTypeColors[jam_type] || jamTypeColors.Default
+      // Normalize jam_type for consistent display (e.g., "traffic_jam" -> "Traffic Jam")
+      const displayJamType = jam_type
+        .replace(/_/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+      const color = jamTypeColors[jam_type] || jamTypeColors.Default;
+      const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+
       return (
         <div
           key={jam_type}
-          className="flex items-center justify-between py-1"
+          className="flex items-center justify-between py-1 px-2 rounded-md transition-all duration-200 hover:bg-white/50 dark:hover:bg-gray-800/50"
         >
           <span
-            className={`px-3 py-1 rounded-full font-semibold text-sm shadow-sm transition-all ${color}`}
+            className={`px-3 py-1 rounded-full font-semibold text-sm shadow-sm ${color}`}
           >
-            {jam_type}
+            {displayJamType}
           </span>
-          <span className="flex items-center space-x-2">
-            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-              {((count / (total || 1)) * 100).toFixed(1)}%
+          <div className="flex items-center space-x-3">
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+              {percentage}%
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-white/60 text-gray-700 text-xs font-bold shadow">
+            <span className="min-w-[32px] text-center px-2 py-0.5 rounded-full bg-white/70 dark:bg-gray-700/70 text-gray-800 dark:text-white text-xs font-bold shadow-sm">
               {count}
             </span>
-          </span>
+          </div>
         </div>
       )
     })
@@ -116,40 +127,57 @@ export default function JamTypeStatsCard() {
 
   if (loading) {
     return (
-      <div className="w-full max-w-md mx-auto rounded-3xl shadow-xl bg-white/30 backdrop-blur-lg border border-white/30 animate-pulse p-6">
-        <div className="h-6 w-1/3 bg-gray-200 rounded mb-4"></div>
-        <div className="h-4 w-full bg-gray-200 rounded mb-2"></div>
-        <div className="h-4 w-2/3 bg-gray-200 rounded mb-2"></div>
-        <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
+      <div className="w-full max-w-md mx-auto rounded-3xl shadow-2xl bg-white/30 dark:bg-gray-900/30 backdrop-blur-lg border border-white/20 dark:border-gray-700/30 p-6 animate-pulse">
+        <div className="flex items-center mb-4">
+          <div className="bg-gray-200 dark:bg-gray-700 rounded-full w-12 h-12 mr-3"></div>
+          <div className="h-6 w-1/2 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+        </div>
+        <div className="space-y-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-2xl p-4 h-32 bg-gray-100 dark:bg-gray-800 shadow-inner">
+              <div className="h-4 w-1/4 bg-gray-200 dark:bg-gray-700 rounded mb-3"></div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <div className="h-6 w-1/3 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                  <div className="h-4 w-1/6 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="h-6 w-1/4 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                  <div className="h-4 w-1/6 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
 
   return (
     <div className="w-full max-w-md mx-auto rounded-3xl shadow-2xl bg-white/30 dark:bg-gray-900/30 backdrop-blur-lg border border-white/20 dark:border-gray-700/30 p-6">
-      <div className="flex items-center mb-4">
-        <span className="bg-white/40 dark:bg-gray-800/40 rounded-full p-3 shadow-lg mr-3">
-          <FiPieChart className="text-pink-500 text-2xl" />
+      <div className="flex items-center mb-6">
+        <span className="bg-white/50 dark:bg-gray-800/50 rounded-full p-3 shadow-lg mr-4 flex-shrink-0">
+          <FiPieChart className="text-teal-500 text-3xl" />
         </span>
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white tracking-tight">
-          Jam Type Statistics
+        <h2 className="text-2xl font-extrabold text-gray-800 dark:text-white tracking-tight leading-tight">
+          Traffic Type Breakdown
         </h2>
       </div>
       <div className="space-y-6">
         {["day", "month", "year", "total"].map((period) => {
-          const { bg, text, size, icon, label } = periodMeta[period]
+          const { bg, text, icon, label } = periodMeta[period]
           return (
             <div
               key={period}
-              className={`rounded-2xl p-4 mb-1 ${bg} shadow-inner`}
+              className={`rounded-2xl p-5 ${bg} shadow-inner transform hover:scale-[1.02] transition-transform duration-300 ease-out`}
             >
               <h3
-                className={`uppercase font-semibold mb-2 tracking-wider flex items-center gap-2 ${text} ${size}`}
+                className={`text-xl font-bold mb-3 tracking-wide flex items-center ${text}`}
               >
                 {icon}
                 {label}
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {renderStats(jamTypeStats[period as keyof JamTypeStats])}
               </div>
             </div>
