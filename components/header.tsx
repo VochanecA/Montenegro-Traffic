@@ -11,6 +11,8 @@ import {
   FiMapPin,
   FiSliders
 } from "react-icons/fi"
+import { FaCar } from "react-icons/fa";
+
 import { useTheme } from "./theme-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -52,16 +54,17 @@ export default function Header() {
           {/* Logo and Tagline */}
           <Link href="/" className="flex items-center gap-3 group">
             <span className="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center shadow-lg transition group-hover:scale-105">
-              <FiMapPin className="text-white text-2xl" />
+              <FaCar className="text-white text-2xl" />
             </span>
             <div>
               <span className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center">
                 Traffic Montenegro
               </span>
-              <span className="block text-xs text-teal-600 dark:text-teal-300 font-medium mt-1 flex items-center gap-1">
-                <FiSliders className="inline-block mr-1" />
-                Customizable traffic jam reporting web app
-              </span>
+<span className="text-xs text-orange-600 dark:text-yellow-300 font-medium mt-1 flex items-center gap-1">
+  <FaCar className="inline-block mr-1" />
+  Traffic jam reporting web app
+</span>
+
             </div>
           </Link>
 

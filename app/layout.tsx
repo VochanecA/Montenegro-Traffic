@@ -7,6 +7,8 @@ import { Toaster } from "@/components/ui/toaster"
 import Header from "@/components/header"
 import HelpChat from "@/components/help-chat"
 import { AuthProvider } from "@/components/auth-provider" // ⬅️ import it
+import { CookieBanner } from "@/components/CookieBanner";
+
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -46,6 +48,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
+        <CookieBanner />
         <AuthProvider> {/* ✅ Wrap everything inside AuthProvider */}
           <ThemeProvider defaultTheme="system">
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
