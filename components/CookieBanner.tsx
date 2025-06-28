@@ -1,33 +1,32 @@
 "use client"
-
 import { useEffect, useState } from "react"
 import { FaCookieBite } from "react-icons/fa"
 
-// CookieBanner component: stays open until user clicks "I Agree"
 export function CookieBanner() {
-  // consent: "undecided" | "yes"
-  const [consent, setConsent] = useState<"undecided" | "yes">("undecided");
+  const [consent, setConsent] = useState<"undecided" | "yes">("undecided")
 
-  // On mount, check localStorage for consent
   useEffect(() => {
+    // Only run in browser
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("cookieConsent");
-      if (stored === "yes") {
-        setConsent("yes");
-      } else {
-        setConsent("undecided");
+      try {
+        const stored = window.localStorage.getItem("cookieConsent")
+        if (stored === "yes") setConsent("yes")
+      } catch (e) {
+        // Fallback: do nothing
       }
     }
-  }, []);
+  }, [])
 
-  // Accept handler
   const handleAccept = () => {
-    localStorage.setItem("cookieConsent", "yes");
-    setConsent("yes");
-  };
+    try {
+      window.localStorage.setItem("cookieConsent", "yes")
+      setConsent("yes")
+    } catch (e) {
+      setConsent("yes")
+    }
+  }
 
-  // Only show banner if consent is not given
-  if (consent !== "undecided") return null;
+  if (consent !== "undecided") return null
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">

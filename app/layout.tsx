@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 import Header from "@/components/header"
 import HelpChat from "@/components/help-chat"
 import { AuthProvider } from "@/components/auth-provider" // ⬅️ import it
-import { CookieBanner } from "@/components/CookieBanner";
+
 
 
 
@@ -61,7 +61,7 @@ export default function RootLayout({
             </div>
           </ThemeProvider>
         </AuthProvider>
-                <CookieBanner />
+        
       </body>
     </html>
   )

@@ -53,8 +53,6 @@ export default function JamForm({
   const { toast } = useToast()
 
   const handleOpenChange = (open: boolean) => {
-    // If the dialog is being opened (open is true) and the user is not authenticated,
-    // prevent opening and redirect. Otherwise, allow the dialog to open/close.
     if (open && !isAuthenticated) {
       toast({
         title: "Authentication required",
@@ -135,15 +133,21 @@ export default function JamForm({
         }
       }
 
+      const authToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('auth-token='))
+        ?.split('=')[1]
+
       const response = await fetch("/api/jams", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(authToken ? { "Authorization": `Bearer ${authToken}` } : {}),
         },
+        credentials: "include",
         body: JSON.stringify({
           ...formData,
           photo_urls: photoUrls,
-          user_id: user.id
         }),
       })
 
@@ -165,12 +169,13 @@ export default function JamForm({
         setPhotos([])
         router.refresh()
       } else {
-        throw new Error("Failed to submit")
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to submit")
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to report traffic jam. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to report traffic jam. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -186,7 +191,6 @@ export default function JamForm({
         </Button>
       </DialogTrigger>
 
-      {/* Conditionally render DialogContent only if authenticated */}
       {isAuthenticated && (
         <DialogContent className={`sm:max-w-[500px] max-h-[90vh] overflow-y-auto z-[1000] ${showMapPicker ? "h-[90vh]" : ""}`}>
           <DialogHeader>
@@ -222,10 +226,10 @@ export default function JamForm({
                   value={formData.jam_type}
                   onValueChange={(value) => setFormData((prev) => ({ ...prev, jam_type: value }))}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[1001]">
                     <SelectItem value="traffic_jam">Traffic Jam</SelectItem>
                     <SelectItem value="accident">Accident</SelectItem>
                     <SelectItem value="construction">Construction</SelectItem>
@@ -241,10 +245,10 @@ export default function JamForm({
                   value={formData.severity}
                   onValueChange={(value) => setFormData((prev) => ({ ...prev, severity: value }))}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select severity" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[1001]">
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="high">High</SelectItem>

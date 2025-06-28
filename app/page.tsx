@@ -10,7 +10,8 @@ import JamTypeStatsCard from "@/components/jam-type-stats-card";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
 import { Facebook, Twitter, Instagram, Linkedin, MapPin } from 'lucide-react';
-
+import { CookieBanner } from "@/components/CookieBanner";
+import ClientSidebar from "@/components/client-sidebar";
 
 interface User {
   id: number;
@@ -25,14 +26,7 @@ interface TrafficJamWithUser extends TrafficJam {
   avatar_url: string | null;
 }
 
-interface TrafficJamResult extends TrafficJam {
-  user?: {
-    full_name: string;
-    avatar_url?: string;
-  };
-}
-
-async function getTrafficJams(hours: number): Promise<TrafficJamResult[]> {
+async function getTrafficJams(hours: number): Promise<TrafficJam[]> {
   try {
     const rawResult = await sql`
       SELECT
@@ -48,15 +42,26 @@ async function getTrafficJams(hours: number): Promise<TrafficJamResult[]> {
 
     const jams = rawResult as unknown as TrafficJamWithUser[];
 
-    return jams.map((jam) => ({
-      ...jam,
-      user: jam.full_name
-        ? {
-            full_name: jam.full_name,
-            avatar_url: jam.avatar_url ?? undefined,
-          }
-        : undefined,
-    }));
+    // Transform the data to match TrafficJam type
+    return jams.map((jam) => {
+      // Destructure to separate user fields from jam fields
+      const { full_name, avatar_url, ...jamData } = jam;
+      
+      // Create a proper TrafficJam object with user info
+      const trafficJam: TrafficJam = {
+        ...jamData,
+        // Ensure location is set (use address as fallback if location is missing)
+        location: jamData.location || jamData.address || `${jamData.latitude}, ${jamData.longitude}`,
+        user: full_name
+          ? {
+              full_name: full_name,
+              avatar_url: avatar_url ?? undefined,
+            }
+          : undefined,
+      };
+      
+      return trafficJam;
+    });
   } catch (error) {
     console.error("Failed to fetch traffic jams:", error);
     return [];
@@ -174,29 +179,9 @@ export default async function HomePage({
           </div>
         </div>
 
-        {/* Sidebar */}
+        {/* Sidebar - Now using Client Component */}
         <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Recent Reports
-            </h2>
-            <div className="space-y-4 max-h-[500px] overflow-y-auto">
-              {trafficJams.length > 0 ? (
-                trafficJams.slice(0, 5).map((jam) => (
-                  <div
-                    key={jam.id}
-                    className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0"
-                  >
-                    <JamDetails jam={jam} />
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                  No active traffic reports at the moment.
-                </p>
-              )}
-            </div>
-          </div>
+          <ClientSidebar trafficJams={trafficJams} />
         </div>
       </div>
 
@@ -206,27 +191,24 @@ export default async function HomePage({
         <JamTypeStatsCard />
       </section>
 
-
-
- {/* Footer */}
-   {/* Footer */}
+      {/* Footer */}
       <footer className="mt-16 bg-gradient-to-r from-teal-600/80 to-blue-600/80 dark:from-gray-900/80 dark:to-gray-800/80 backdrop-blur-lg border-t border-grey-400/50 shadow-2xl text-white rounded-t-xl">
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {/* Column 1: Brand and Description */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="flex items-center gap-3 mb-4">
-              <MapPin className="text-teal-200" size={28} strokeWidth={2.5} /> {/* Reduced size */}
-              <span className="font-bold text-2xl text-teal-100 drop-shadow-lg">Traffic Montenegro</span> {/* Reduced size and boldness */}
+              <MapPin className="text-teal-200" size={28} strokeWidth={2.5} />
+              <span className="font-bold text-2xl text-teal-100 drop-shadow-lg">Traffic Montenegro</span>
             </div>
-            <p className="text-xs text-teal-50 leading-relaxed max-w-xs"> {/* Reduced text size */}
+            <p className="text-xs text-teal-50 leading-relaxed max-w-xs">
               Your go-to source for real-time traffic updates and community-driven reports across Montenegro. Stay informed, stay safe.
             </p>
           </div>
 
           {/* Column 2: Quick Links */}
           <div className="text-center md:text-left">
-            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Quick Links</h3> {/* Reduced heading size */}
-            <ul className="space-y-3 text-sm"> {/* Reduced list item text size */}
+            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Quick Links</h3>
+            <ul className="space-y-3 text-sm">
               <li>
                 <a href="/about" className="text-teal-50 hover:text-teal-200 transition-all duration-300 ease-in-out transform hover:translate-x-1 block">
                   About Us
@@ -247,8 +229,8 @@ export default async function HomePage({
 
           {/* Column 3: Legal */}
           <div className="text-center md:text-left">
-            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Legal</h3> {/* Reduced heading size */}
-            <ul className="space-y-3 text-sm"> {/* Reduced list item text size */}
+            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Legal</h3>
+            <ul className="space-y-3 text-sm">
               <li>
                 <a href="/privacy" className="text-teal-50 hover:text-teal-200 transition-all duration-300 ease-in-out transform hover:translate-x-1 block">
                   Privacy Policy
@@ -269,33 +251,36 @@ export default async function HomePage({
 
           {/* Column 4: Connect With Us (Social Media) */}
           <div className="text-center md:text-left">
-            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Connect With Us</h3> {/* Reduced heading size */}
+            <h3 className="text-lg font-semibold text-teal-100 mb-5 border-b border-teal-300/50 pb-2 inline-block">Connect With Us</h3>
             <div className="flex justify-center md:justify-start space-x-5">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
                  className="text-teal-50 hover:text-teal-200 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
-                <Facebook size={24} /> {/* Reduced icon size */}
+                <Facebook size={24} />
               </a>
               <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
                  className="text-teal-50 hover:text-teal-200 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
-                <Twitter size={24} /> {/* Reduced icon size */}
+                <Twitter size={24} />
               </a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
                  className="text-teal-50 hover:text-teal-200 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
-                <Instagram size={24} /> {/* Reduced icon size */}
+                <Instagram size={24} />
               </a>
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
                  className="text-teal-50 hover:text-teal-200 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
-                <Linkedin size={24} /> {/* Reduced icon size */}
+                <Linkedin size={24} />
               </a>
             </div>
           </div>
         </div>
 
         {/* Bottom Copyright Section */}
-        <div className="text-center py-5 text-xs text-teal-200 border-t border-teal-800/30"> {/* Reduced text size */}
+        <div className="text-center py-5 text-xs text-teal-200 border-t border-teal-800/30">
           © {new Date().getFullYear()} Traffic Montenegro. All rights reserved.
         </div>
       </footer>
+
+      {/* Cookie Banner */}
+      <CookieBanner />
     </div>
   );
 }

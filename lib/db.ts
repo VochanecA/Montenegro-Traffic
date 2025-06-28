@@ -16,11 +16,10 @@ export function sql(...args: Parameters<ReturnType<typeof neon>>) {
     }
     _sql = neon(url)
   }
-
   return _sql(...args)
 }
 
-/* ---- Types (unchanged) ---- */
+/* ---- Types ---- */
 export interface User {
   id: number
   email: string
@@ -38,6 +37,7 @@ export interface TrafficJam {
   description?: string
   latitude: number
   longitude: number
+  location: string // Added this property
   address?: string
   jam_type: "traffic_jam" | "accident" | "construction" | "weather" | "other"
   severity: "low" | "medium" | "high"
@@ -46,4 +46,32 @@ export interface TrafficJam {
   created_at: string
   updated_at: string
   user?: { full_name: string; avatar_url?: string }
+}
+
+export async function getTrafficJamById(id: number): Promise<TrafficJam | null> {
+  const result = await sql`
+    SELECT
+      tj.*,
+      u.full_name,
+      u.avatar_url
+    FROM traffic_jams tj
+    LEFT JOIN users u ON tj.user_id = u.id
+    WHERE tj.id = ${id}
+    LIMIT 1
+  `;
+
+  // Access rows property (result.rows) - adjust if your client uses a different property
+  const rows = (result as any).rows || result;
+
+  if (!rows || rows.length === 0) return null;
+
+  const jam = rows[0];
+
+  return {
+    ...jam,
+    user: {
+      full_name: jam.full_name || "Unknown User",
+      avatar_url: jam.avatar_url || undefined,
+    },
+  } as TrafficJam;
 }
